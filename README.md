@@ -9,6 +9,7 @@ Clone this repo and the treecode/Bonsai repo into the same parent folder on your
 
 ##Compiling
 In Bonsai/runtime do:
+
     cmake -DUSE_B40C=1 -DUSE_DUST=0 -DCMAKE_CXX_COMPILER=mpicxx
     make
 
