@@ -4,7 +4,8 @@ import struct
 import glob
 import numpy as np
 
-BONSAI_BIN = '../runtime/bonsai2_slowdust'
+#assume this Bonsai and bonsai_phys241 are next to eachother
+BONSAI_BIN = '../Bonsai/runtime/bonsai2_slowdust'
 
 class Stars(object):
 
@@ -29,14 +30,32 @@ class Stars(object):
 
 
 
-def run_plummer(nParticles,snap_prefix,T=2,dt=0.0625):
-	bonsai_bin = '../runtime/bonsai2_slowdust'
+def run_plummer(nParticles,snap_prefix,T=2,dt=0.0625, bonsai_bin = None, mpi_n = 0, mpi_log_file = 'mpiout.log'):
+	if bonsai_bin is None:
+		#use default
+		bonsai_bin = BONSAI_BIN
+
 	log = False
 
-	if call([BONSAI_BIN,'--log' if log else '','--plummer',str(nParticles),'--snapname',snap_prefix,'--snapiter','1','-T',str(T),'-dt',str(dt)]):
-		return "Error"
+	if mpi_n > 0:
+		#run mpi
+		#mpirun -n 2 --output-filename mpiout.txt ./bonsai2_slowdust -i model3_child_compact.tipsy -T1000 --logfile logfile.txt
+		if call(['mpirun','-n',str(mpi_n),
+				 '--output-filename',mpi_log_file,bonsai_bin,
+				 '--plummer',str(nParticles),
+				 '--snapname',snap_prefix,'--snapiter','1',
+				 '-T',str(T),'-dt',str(dt)
+				]):
+			return "Error"
+		else:
+			return "Done"
+
 	else:
-		return "Done"
+		#single GPU mode
+		if call([bonsai_bin,'--log' if log else '','--plummer',str(nParticles),'--snapname',snap_prefix,'--snapiter','1','-T',str(T),'-dt',str(dt)]):
+			return "Error"
+		else:
+			return "Done"
 
 def run_sphere(nParticles,snap_prefix,T=2,dt=0.0625):
 	log = False
