@@ -68,7 +68,7 @@ def run_sphere(nParticles,snap_prefix,T=2,dt=0.0625,dSnap = 0.0625):
 	else:
 		return "Done"
 
-def fig_gen(stars, index, prefix='', lim = .8, figsize = 10, pointsize = .75):
+def fig_gen(stars, index, prefix='', time=None, lim = .8, figsize = 10, pointsize = .3): #.75
 		fig = plt.figure(figsize=(figsize,figsize))
 		ax = fig.gca(projection='3d')
 		ax.plot(stars.pos[:,0],stars.pos[:,1],stars.pos[:,2],'w.',markersize=pointsize)
@@ -77,6 +77,8 @@ def fig_gen(stars, index, prefix='', lim = .8, figsize = 10, pointsize = .75):
 		ax.set_zlim(-lim,lim)
 		ax.set_axis_off()
 		ax.set_axis_bgcolor('black')
+		if time is not None:
+			plt.title('time: %f'%time,color='white')
 		plt.tight_layout()
 		fig_path_string = prefix+'pos_'+str(index)+'.png'
 		plt.savefig(fig_path_string)
@@ -89,6 +91,12 @@ def snap_figs(snap_array, prefix=''):
     for snap in snap_array:
 		fig_gen(snap['star'], prefix, counter)
 		counter +=1
+
+def make_mp4(prefix, filename, quality = 100., frame_rate = 20):
+	call(['ffmpeg', '-f', 'image2', '-qcomp',
+		str(quality/100.0), '-r', str(frame_rate),
+		'-i', prefix + 'pos_%d.png', filename+'.mp4'])
+	return "Done"
 
 def load_tipsy(tipsy_prefix, figures_prefix = None):
 	'''pass figures_prefix to generate figures on the fly (does not populate snaps_array)'''
@@ -137,7 +145,7 @@ def load_tipsy(tipsy_prefix, figures_prefix = None):
 		#process stars:
 		if nStar > 0:
 			if figures_prefix is not None:
-				fig_gen(Stars(tfile,nDim,nStar),index,prefix=figures_prefix)
+				fig_gen(Stars(tfile,nDim,nStar),index,prefix=figures_prefix,time=snaps_array[-1]['time'])
 			else:
 				snaps_array[-1]['star'] = Stars(tfile,nDim,nStar)
 
