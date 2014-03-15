@@ -46,7 +46,7 @@ def run_plummer(nParticles,snap_prefix,T=2,dt=0.0625, dSnap = 0.0625, bonsai_bin
 		if call(['mpirun','-n',str(mpi_n),
 				 '--output-filename',mpi_log_file,bonsai_bin,
 				 '--plummer',str(nParticles),
-				 '--snapname',snap_prefix,'--snapiter','1',
+				 '--snapname',snap_prefix,'--snapiter',str(dSnap),
 				 '-T',str(T),'-dt',str(dt)
 				]):
 			return "Error"
@@ -68,7 +68,7 @@ def run_sphere(nParticles,snap_prefix,T=2,dt=0.0625,dSnap = 0.0625):
 	else:
 		return "Done"
 
-def fig_gen(stars, index, prefix='', time=None, lim = .8, figsize = 10, pointsize = .3): #.75
+def fig_gen(stars, index, prefix='', time=None, lim = .8, figsize = 10, pointsize = .1): #.75
 		fig = plt.figure(figsize=(figsize,figsize))
 		ax = fig.gca(projection='3d')
 		ax.plot(stars.pos[:,0],stars.pos[:,1],stars.pos[:,2],'w.',markersize=pointsize)
@@ -93,9 +93,12 @@ def snap_figs(snap_array, prefix=''):
 		counter +=1
 
 def make_mp4(prefix, filename, quality = 100., frame_rate = 20):
-	call(['ffmpeg', '-f', 'image2', '-qcomp',
-		str(quality/100.0), '-r', str(frame_rate),
-		'-i', prefix + 'pos_%d.png', filename+'.mp4'])
+	call(['ffmpeg',
+		'-r', str(frame_rate),
+		'-i', prefix + 'pos_%d.png',
+		'-vcodec','libx264',
+		'-b','10000k',
+		filename+'.mp4'])
 	return "Done"
 
 def load_tipsy(tipsy_prefix, figures_prefix = None):
