@@ -14,6 +14,8 @@ matplotlib.use('Agg') #allows figures to be generated without $DISPLAY connected
 
 import struct, glob
 from subprocess import call
+from multiprocessing import Process
+
 import numpy as np
 from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import axes3d
@@ -70,12 +72,16 @@ class Stars(object):
 		else:
 			raise Exception("%iD not supported"%dim)
 
-	def save_figure(self, figure_name, lim = .8, figsize = 10, pointsize = .1):
+	def save_figure(self, figure_name, lim = .8, figsize = 10, pointsize = .1, nRed = None):
 		"""
 		Generates a figure "[figure_name].png" for this Star object
 
 		Keyword arguments:
 		figure_name -- path where figure is to be saved
+		lim -- limits the range of all axis in view (default: .8)
+		figsize -- size of final image (.png)
+		pointsize -- size of stars
+		nRed -- colors the first nRed particles red and the remaining blue (default: None)
 
 		Prints:
 		path to file just saved
@@ -86,7 +92,13 @@ class Stars(object):
 
 		fig = plt.figure(figsize=(figsize,figsize))
 		ax = fig.gca(projection='3d')
-		ax.plot(self.pos[:,0],self.pos[:,1],self.pos[:,2],'w.',markersize=pointsize)
+		if nRed is not None:
+			ax.plot(self.pos[:nRed,0],self.pos[:nRed,1],self.pos[:nRed,2],'r.',markersize=pointsize)
+			ax.plot(self.pos[nRed:,0],self.pos[nRed:,1],self.pos[nRed:,2],'b.',markersize=pointsize)
+		else:	
+			ax.plot(self.pos[:,0],self.pos[:,1],self.pos[:,2],'w.',markersize=pointsize)
+
+
 		ax.set_xlim(-lim,lim)
 		ax.set_ylim(-lim,lim)
 		ax.set_zlim(-lim,lim)
@@ -120,7 +132,7 @@ def make_mp4(png_prefix, mp4_prefix, frame_rate = 20, bit_rate = '8000k', codec 
 	print "Saved: " + mp4_prefix + ".mp4"
 
 
-def read_tipsy(tipsy_prefix, figures_prefix = None):
+def read_tipsy(tipsy_prefix, figures_prefix = None, lim = .8, nRed = None, nThreads = 4):
 	'''
 	Reads a set of "[tipsy_prefix]{number}" files, where {number} is a placeholder for consecutive dicimal numbers, and
 	returns an array of Star() objects.
@@ -133,7 +145,8 @@ def read_tipsy(tipsy_prefix, figures_prefix = None):
 
 	Keyword arguments:
 	figures_prefix -- generates figures only, no array returned (default: None)
-
+	lim -- limits the range of all axis in view (default: .8)
+	nRed -- when plotting figures colors the first nRed particles red and the remaining blue (default: None)
 	'''
 
 	#comparitor for file name sorting
@@ -150,22 +163,52 @@ def read_tipsy(tipsy_prefix, figures_prefix = None):
 	tipsy_list = glob.glob(tipsy_prefix+"*")
 	tipsy_list.sort(cmp)
 
-	stars_array = []
+	if figures_prefix is not None:
+		#run parallel processes to plot figures
 
-	index = 0 #used to count and name figures
-
-	for tipsy_file in tipsy_list:
-		#TODO: make sure path is file
-
-		if figures_prefix is not None:
+		#parallel function definition
+		def read_and_plot(tipsy_file,index,lim,nRed):
 			temp_stars = Stars(tipsy_file)
-			temp_stars.save_figure(figures_prefix+"_"+str(index))
-			index += 1
-		else:
-			stars_array[-1] = Stars(tipsy_file)
+			temp_stars.save_figure(figures_prefix+str(index),lim=lim,nRed=nRed)
 
-	if figures_prefix is None:
+#		procs = [] #array of proceedures
+		index = 0
+		for tipsy_file in tipsy_list:
+			read_and_plot(tipsy_file,index,lim,nRed)
+#			procs.append(Process(target=read_and_plot,args=(tipsy_file,index,lim,nRed)))
+#			procs[-1].start()
+#			index +=1
+			# if index % nThreads == 0:
+			# 	for i in range(nThreads):
+			# 		procs[i].join()
+			# 	#wait for nThreads to finish
+			# 	procs = []
+
+
+		# for i in range(int(self.dim.z)):
+		# 	procs[i].join()
+	
+	else:
+		stars_array = []
+		for tipsy_file in tipsy_list:
+			stars_array[-1] = Stars(tipsy_file)
 		return stars_array
+
+
+
+	# index = 0 #used to count and name figures
+
+	# for tipsy_file in tipsy_list:
+	# 	#TODO: make sure path is file
+
+	# 	if figures_prefix is not None:
+	# 		temp_stars = Stars(tipsy_file)
+	# 		temp_stars.save_figure(figures_prefix+str(index),lim=lim,nRed=nRed)
+	# 		index += 1
+	# 	else:
+	# 		stars_array[-1] = Stars(tipsy_file)
+
+	# if figures_prefix is None:
 
 def txt2tipsy(nbody_file,tipsy_file):
 
