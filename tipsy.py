@@ -19,6 +19,7 @@ from multiprocessing import Process
 import numpy as np
 from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import axes3d
+from math import pi, cos, sin
 
 class Stars(object):
 	""" 
@@ -75,6 +76,79 @@ class Stars(object):
 		else:
 			raise Exception("%iD not supported"%dim)
 
+	def boost(self, velocity):
+		"""
+		Add a net velocity to the stars
+
+		Arguments:
+		velocity -- a velocity to add to each star
+		"""
+
+		velocity = np.array(velocity)
+
+		for i in range(self.nStars):
+			self.vel[i] += velocity
+
+
+	def translate(self,displacement):
+		"""
+		Rigidly displaces the stars
+
+		Arguments:
+		displacement -- a vector in the direction of the desired displacement
+		"""
+
+		displacement = np.array(displacement)
+
+		for i in range(self.nStars):
+			self.pos[i] += displacement
+
+
+	def rotate_euler_deg(self, phi, theta, psi):
+		"""
+		Rotate the stars using Euler angles in degrees (http://mathworld.wolfram.com/EulerAngles.html)
+		angles are made negative in this function for "active" rotation of the star position
+
+		Arguments (rotations applied in this order):
+		phi -- right hand rotation about Z axis [degrees]
+		theta -- right hand roation about resultant X axis [degrees]
+		psi -- right hand rotation about resultant Z axis [degrees]
+
+		"""
+
+		self.rotate_euler(phi*pi/180., theta*pi/180., psi*pi/180)
+
+	def rotate_euler(self, phi, theta, psi):
+		"""
+		Rotate the stars using Euler angles in radians (http://mathworld.wolfram.com/EulerAngles.html)
+		angles are made negative in this function for "active" rotation of the star position
+
+		Arguments (rotations applied in this order):
+		phi -- right hand rotation about Z axis [radians]
+		theta -- right hand roation about resultant X axis [radians]
+		psi -- right hand rotation about resultant Z axis [radians]
+
+		"""
+
+		phi = -phi
+		theta = -theta
+		psi = -psi
+
+		a = np.zeros((3,3))
+		a[0,0]	=	cos(psi)*cos(phi)-cos(theta)*sin(phi)*sin(psi)	
+		a[0,1]	=	cos(psi)*sin(phi)+cos(theta)*cos(phi)*sin(psi)	
+		a[0,2]	=	sin(psi)*sin(theta)	
+		a[1,0]	=	-sin(psi)*cos(phi)-cos(theta)*sin(phi)*cos(psi)	
+		a[1,1]	=	-sin(psi)*sin(phi)+cos(theta)*cos(phi)*cos(psi)	
+		a[1,2]	=	cos(psi)*sin(theta)	
+		a[2,0]	=	sin(theta)*sin(phi)	
+		a[2,1]	=	-sin(theta)*cos(phi)	
+		a[2,2]	=	cos(theta)
+
+		for i in range(self.nStars):
+			self.pos[i] = a.dot(self.pos[i])
+			self.vel[i] = a.dot(self.vel[i])
+
 	def append(self,tipsyFilePath):
 		"""
 		Appends stars from tipsy file into this Stars object
@@ -106,7 +180,7 @@ class Stars(object):
 				self.pos[i,:] = (x1,x2,x3)
 				self.vel[i,:] = (v1,v2,v3)
 				self.mass[i] = mass
-				self.IDs[i] = phi_ID
+				self.IDs[i] = self.nStars+phi_ID
 
 			self.nStars += nStars_added
 		else:
@@ -144,7 +218,7 @@ class Stars(object):
 		lim -- limits the range of all axis in view (default: .8)
 		figsize -- size of final image (.png)
 		pointsize -- size of stars
-		nRed -- colors the first nRed particles red and the remaining blue (default: None)
+		nRed -- colors the first nRed particles (based on phi_ID) red and the remaining blue (default: None)
 
 		Prints:
 		path to file just saved
@@ -156,8 +230,11 @@ class Stars(object):
 		fig = plt.figure(figsize=(figsize,figsize))
 		ax = fig.gca(projection='3d')
 		if nRed is not None:
-			ax.plot(self.pos[:nRed,0],self.pos[:nRed,1],self.pos[:nRed,2],'r.',markersize=pointsize)
-			ax.plot(self.pos[nRed:,0],self.pos[nRed:,1],self.pos[nRed:,2],'b.',markersize=pointsize)
+
+			redIdx = np.where(self.IDs < nRed)[0]
+			blueIdx = np.where(self.IDs >= nRed)[0]
+			ax.plot(self.pos[redIdx,0],self.pos[redIdx,1],self.pos[redIdx,2],'r.',markersize=pointsize)
+			ax.plot(self.pos[blueIdx,0],self.pos[blueIdx,1],self.pos[blueIdx,2],'b.',markersize=pointsize)
 		else:	
 			ax.plot(self.pos[:,0],self.pos[:,1],self.pos[:,2],'w.',markersize=pointsize)
 
