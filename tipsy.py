@@ -30,7 +30,8 @@ class Stars(object):
 	mass = None #array of star masses
 	pos = None #array of star positions
 	vel = None #array of star velocities
-	metals = None #array of star metal composition (fraction?)
+	# metals = None #array of star metal composition (fraction?)
+	IDs = None #array of star id numbers (fraction?)
 	nStars = 0 #number of stars stored in this object
 
 	def __init__(self,tipsyFilePath):
@@ -58,19 +59,81 @@ class Stars(object):
 		self.mass = np.zeros((self.nStars),dtype=np.float32)
 		self.pos = np.zeros((self.nStars,dim),dtype=np.float32)
 		self.vel = np.zeros((self.nStars,dim),dtype=np.float32)
-		self.metals = np.zeros((self.nStars),dtype=np.float32)
+		self.IDs = np.zeros((self.nStars),dtype=np.float32)
+		# self.metals = np.zeros((self.nStars),dtype=np.float32)
 
 		if dim == 3:
 			#3D
 			for i in range(self.nStars):
-				mass,x1,x2,x3,v1,v2,v3,metals,tform_IGNORED,eps_IGNORED,phi_IGNORED = struct.unpack('f3f3f3fi',tfile.read(44))
+				mass,x1,x2,x3,v1,v2,v3,metals,tform_IGNORED,eps_IGNORED,phi_ID = struct.unpack('f3f3f3fi',tfile.read(44))
 				self.pos[i,:] = (x1,x2,x3)
 				self.vel[i,:] = (v1,v2,v3)
 				self.mass[i] = mass
-				self.metals[i] = metals
+				# self.metals[i] = metals
+				self.IDs[i] = phi_ID
 
 		else:
 			raise Exception("%iD not supported"%dim)
+
+	def append(self,tipsyFilePath):
+		"""
+		Appends stars from tipsy file into this Stars object
+
+		Arguments:
+		tipsyFilePath -- path to tipsy file to be appended
+		"""
+
+		tfile = open(tipsyFilePath,'rb')
+		#get time
+		time, = struct.unpack('d',tfile.read(8)) #one double (the trailing ',' makes self.time a number rather than a tuple
+
+		#get number of each particle
+		#nTot,nDim,nGas,nDark,nStar = struct.unpack('iiiii',tfile.read(20))
+		nTot,dim,nGas,nDark,nStars_added,temp = struct.unpack('iiiiii',tfile.read(24)) #c structures pad to multiple of 8 bytes?
+		#print self.time
+		print 'Loading Header (%s)... time:%f, nTot:%i, nStar:%i' % (tipsyFilePath, time, nTot, nStars_added)
+
+		#pass the file pointer to this function for each particle
+		self.mass.resize((self.nStars+nStars_added,)) #= np.zeros((self.nStars),dtype=np.float32)
+		self.pos.resize((self.nStars+nStars_added,dim)) #= np.zeros((self.nStars,dim),dtype=np.float32)
+		self.vel.resize((self.nStars+nStars_added,dim)) #= np.zeros((self.nStars,dim),dtype=np.float32)
+		self.IDs.resize((self.nStars+nStars_added,))  #= np.zeros((self.nStars),dtype=np.float32)
+
+		if dim == 3:
+			#3D
+			for i in range(self.nStars, self.nStars+nStars_added):
+				mass,x1,x2,x3,v1,v2,v3,metals,tform_IGNORED,eps_IGNORED,phi_ID = struct.unpack('f3f3f3fi',tfile.read(44))
+				self.pos[i,:] = (x1,x2,x3)
+				self.vel[i,:] = (v1,v2,v3)
+				self.mass[i] = mass
+				self.IDs[i] = phi_ID
+
+			self.nStars += nStars_added
+		else:
+			raise Exception("%iD not supported"%dim)
+
+	def save_tipsy(self,tipsyFilePath):
+		"""
+		Saves the Stars object in tipsy format.
+
+		Arguments:
+		tipsyFilePath --- path to output file
+		"""
+		print "Writing..."
+		tfile = open(tipsyFilePath,'wb')
+
+		#time first
+		tfile.write(struct.pack('d',self.time)) #initial time
+
+		tfile.write(struct.pack('iiiiii',self.nStars,3,0,0,self.nStars,0)) # nTot,dim,nGas,nDark,self.nStars,temp
+
+		for i in range(self.nStars):
+			 tfile.write(struct.pack('f3f3f3fi',self.mass[i],self.pos[i,0],self.pos[i,1],self.pos[i,2],self.vel[i,0],self.vel[i,1],self.vel[i,2],0.0,0.0,0.0,i))
+			 #mass,x1,x2,x3,v1,v2,v3,metals,tform_IGNORED,eps_IGNORED,phi_ID
+		
+		tfile.close()
+
+		print "Saved: "+tipsyFilePath
 
 	def save_figure(self, figure_name, lim = .8, figsize = 10, pointsize = .1, nRed = None):
 		"""
@@ -132,7 +195,7 @@ def make_mp4(png_prefix, mp4_prefix, frame_rate = 20, bit_rate = '8000k', codec 
 	print "Saved: " + mp4_prefix + ".mp4"
 
 
-def read_tipsy(tipsy_prefix, figures_prefix = None, lim = .8, nRed = None, nThreads = 4):
+def read_tipsy(tipsy_prefix, figures_prefix = None, lim = .8, pointsize = .1, nRed = None, nThreads = 4):
 	'''
 	Reads a set of "[tipsy_prefix]{number}" files, where {number} is a placeholder for consecutive dicimal numbers, and
 	returns an array of Star() objects.
@@ -146,13 +209,14 @@ def read_tipsy(tipsy_prefix, figures_prefix = None, lim = .8, nRed = None, nThre
 	Keyword arguments:
 	figures_prefix -- generates figures only, no array returned (default: None)
 	lim -- limits the range of all axis in view (default: .8)
-	nRed -- when plotting figures colors the first nRed particles red and the remaining blue (default: None)
+	pointsize -- size of points in figure
+	nRed -- when plotting figures colors the first nRed particles red and the remaining blue (default: None) -- broken
 	'''
 
 	#comparitor for file name sorting
 	def cmp(x,y):
-		x_num = float(x.lstrip(tipsy_prefix))
-		y_num = float(y.lstrip(tipsy_prefix))
+		x_num = float(x.lstrip(tipsy_prefix+'_'))
+		y_num = float(y.lstrip(tipsy_prefix+'_'))
 		if x_num > y_num:
 			return 1
 		elif x_num < y_num:
@@ -167,17 +231,19 @@ def read_tipsy(tipsy_prefix, figures_prefix = None, lim = .8, nRed = None, nThre
 		#run parallel processes to plot figures
 
 		#parallel function definition
-		def read_and_plot(tipsy_file,index,lim,nRed):
-			temp_stars = Stars(tipsy_file)
-			temp_stars.save_figure(figures_prefix+str(index),lim=lim,nRed=nRed)
+		# def read_and_plot(tipsy_file,index,lim,nRed):
+		# 	temp_stars = Stars(tipsy_file)
+		# 	temp_stars.save_figure(figures_prefix+str(index),lim=lim,nRed=nRed)
 
 #		procs = [] #array of proceedures
 		index = 0
 		for tipsy_file in tipsy_list:
-			read_and_plot(tipsy_file,index,lim,nRed)
+			#read_and_plot(tipsy_file,index,lim,nRed)
+			temp_stars = Stars(tipsy_file)
+			temp_stars.save_figure(figures_prefix+str(index),lim=lim,pointsize=pointsize, nRed=nRed)
 #			procs.append(Process(target=read_and_plot,args=(tipsy_file,index,lim,nRed)))
 #			procs[-1].start()
-#			index +=1
+			index +=1
 			# if index % nThreads == 0:
 			# 	for i in range(nThreads):
 			# 		procs[i].join()
@@ -216,13 +282,26 @@ def txt2tipsy(nbody_file,tipsy_file):
 	# eta is "accuracy parameter"
 	# epsilon is "softening radius" (for close objects)
 
+	nStars = None
+	eta = None
+	dt = None
+	tmax = None
+	eps2 = None
+
 	#read header
 	print "Reading..."
 
 	nbfile = open(nbody_file,'r')
-	nStars, eta, dt, tmax, eps2 = map(float,nbfile.readline().rstrip().split())
+	header_line = nbfile.readline().rstrip()
 	nbfile.close()
 
+	if len(header_line.split()) == 5:
+		#aarseth format
+		nStars, eta, dt, tmax, eps2 = map(float,header_line.split())
+	elif len(header_line.split()) == 2:
+		nStars, tmax = map(float,header_line.split())
+	else:
+		raise Exception("Error: header format not recognized")
 
 	star_data = np.loadtxt(nbody_file,skiprows=1)
 
