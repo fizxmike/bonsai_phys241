@@ -14,7 +14,7 @@ In Bonsai/runtime do:
 ##Results
 * View Sphere/Plummer Results: [Plummer.ipynb](http://nbviewer.ipython.org/github/fizxmike/bonsai_phsy241/blob/master/Plummer.ipynb)
 * View Cartwheel Midterm Results: [Cartwheel.ipynb](http://nbviewer.ipython.org/github/fizxmike/bonsai_phsy241/blob/master/Cartwheel.ipynb)
-* View Milky Way Galaxy B (from galactics) Results: [MwGalaxy.ipynb](http://nbviewer.ipython.org/github/fizxmike/bonsai_phsy241/blob/master/MWGalaxy.ipynb)
+* View Milky Way Galaxy B (from galactics) Results: [MWGalaxy.ipynb](http://nbviewer.ipython.org/github/fizxmike/bonsai_phsy241/blob/master/MWGalaxy.ipynb)
 
 
 ##Other
