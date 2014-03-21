@@ -1,14 +1,19 @@
+## @namespace tipsy 
+#  The tipsy module provides utilites for managing input and output in .tipsy format for nbody simulations
+
 """
 Tipsy.py module
 
 Used to easily hadle .tipsy file format.
 
-Offers plotting and video creation, and conversion of text to .tipsy format.
+Offers nbody.txt/.tipsy conversion, galaxy manipulation, plotting and video creation.
 
 Author: Michael M. Folkerts
 E-Mail: mmfolkerts@gmail.com
 Project: UC San Diego Physics 241, Winter 2014, Prof. J. Kuti
 """
+
+
 import matplotlib
 matplotlib.use('Agg') #allows figures to be generated without $DISPLAY connected (on a remote server)
 
@@ -21,26 +26,36 @@ from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import axes3d
 from math import pi, cos, sin
 
+
 class Stars(object):
 	""" 
-	The Stars object holds mass, position, velocity, and composition information extracted
-	from a .tipsy file for stars only (gas and dark matter ignored).
+	The Stars object holds mass, position, velocity, and particle IDs extracted	from a .tipsy file.
+
+	Currently on stars are processed (gas and dark matter ignored). Also, the phi parameter is used as a particle ID (like Bonsai).
 	"""
 
-	time = None #simulation time
-	mass = None #array of star masses
-	pos = None #array of star positions
-	vel = None #array of star velocities
-	# metals = None #array of star metal composition (fraction?)
-	IDs = None #array of star id numbers (fraction?)
-	nStars = 0 #number of stars stored in this object
+	## Simulation timestamp (carried over from .tipsy file)
+	time = None
+	## Array of star masses
+	mass = None
+	## Array of star positions
+	pos = None
+	## Array of star velocities
+	vel = None
+	## Array of star id numbers
+	IDs = None
+	## Number of stars stored in this object
+	nStars = 0
 
 	def __init__(self,tipsyFilePath):
 		"""
 		Constructs Stars object from a .tipsy file.
 
-		Arguments:
-		tipsyFilePath -- path to a single .tipsy file
+		Converts from binary .tipsy format to a python object
+
+		@param[in] tipsyFilePath	path to a single .tipsy file
+
+		@returns	an instance of the Stars object
 		"""
 
 		tfile = open(tipsyFilePath,'rb')
@@ -76,28 +91,31 @@ class Stars(object):
 		else:
 			raise Exception("%iD not supported"%dim)
 
-	def scale(self,factor, invarient = True):
-		"""
-		Scale all lengths in Stars by factor.
+	# Probably doesn't work right, taken out
+	# def scale(self,factor, invarient = True):
+	# 	"""
+	# 	Scale all lengths in Stars by factor.
 
-		Arguments:
-		factor -- multiplies the position and velocity vecors
-		invarient -- scales mass as well (default: True)
-		"""
-		for i in range(self.nStars):
-			self.pos[i] *= factor
-			self.vel[i] *= factor
+	# 	@param[in]	factor		multiplies the position and velocity vecors
+	# 	@param[in]	invarient	scales masses as well (default: True)
+	# 	"""
+	# 	for i in range(self.nStars):
+	# 		self.pos[i] *= factor
+	# 		self.vel[i] *= factor
 
-		if invarient:
-			for i in range(self.nStars):
-				self.mass[i] *= factor
+	# 	if invarient:
+	# 		for i in range(self.nStars):
+	# 			self.mass[i] *= factor
 
 	def boost(self, velocity):
 		"""
-		Add a net velocity to the stars
+		Add a net velocity (3-vector) to all stars
 
-		Arguments:
-		velocity -- a velocity to add to each star
+		The velocity vector is added to the current volocity of each star
+
+		@param[in]	velocity	a tuple of lenght 3
+
+		@returns	None
 		"""
 
 		velocity = np.array(velocity)
@@ -108,10 +126,13 @@ class Stars(object):
 
 	def translate(self,displacement):
 		"""
-		Rigidly displaces the stars
+		Rigidly displaces all stars
 
-		Arguments:
-		displacement -- a vector in the direction of the desired displacement
+		The displacement vector is added to each star location.
+
+		@param[in]	displacement -- a vector in the direction of the desired displacement
+
+		@returns	None
 		"""
 
 		displacement = np.array(displacement)
@@ -122,28 +143,32 @@ class Stars(object):
 
 	def rotate_euler_deg(self, phi, theta, psi):
 		"""
-		Rotate the stars using Euler angles in degrees (http://mathworld.wolfram.com/EulerAngles.html)
-		angles are made negative in this function for "active" rotation of the star position
+		Rotates all stars using Euler angles in degrees (http://mathworld.wolfram.com/EulerAngles.html)
 
-		Arguments (rotations applied in this order):
-		phi -- right hand rotation about Z axis [degrees]
-		theta -- right hand roation about resultant X axis [degrees]
-		psi -- right hand rotation about resultant Z axis [degrees]
+		Angles are made negative within this function for "active" rotation of the star position.
+		Rotations are applied in the function argument order.
 
+		@param[in]	phi		(degrees) right hand rotation about +Z axis
+		@param[in]	theta	(degrees) right hand roation about resultant +X axis
+		@param[in]	psi		(degrees) right hand rotation about resultant +Z axis
+
+		@returns	None
 		"""
 
 		self.rotate_euler(phi*pi/180., theta*pi/180., psi*pi/180)
 
 	def rotate_euler(self, phi, theta, psi):
 		"""
-		Rotate the stars using Euler angles in radians (http://mathworld.wolfram.com/EulerAngles.html)
-		angles are made negative in this function for "active" rotation of the star position
+		Rotates all stars using Euler angles in radians (http://mathworld.wolfram.com/EulerAngles.html)
 
-		Arguments (rotations applied in this order):
-		phi -- right hand rotation about Z axis [radians]
-		theta -- right hand roation about resultant X axis [radians]
-		psi -- right hand rotation about resultant Z axis [radians]
+		Angles are made negative within this function for "active" rotation of the star position.
+		Rotations are applied in the function argument order.
 
+		@param[in]	phi		(radians) right hand rotation about +Z axis
+		@param[in]	theta	(radians) right hand roation about resultant +X axis
+		@param[in]	psi		(radians) right hand rotation about resultant +Z axis
+
+		@returns	None
 		"""
 
 		phi = -phi
@@ -167,10 +192,13 @@ class Stars(object):
 
 	def append(self,tipsyFilePath):
 		"""
-		Appends stars from tipsy file into this Stars object
+		Appends stars from a tipsy file into this Stars object
 
-		Arguments:
-		tipsyFilePath -- path to tipsy file to be appended
+		The particle IDs will continue to increment starting from Stars.nStars
+
+		@param[in]	tipsyFilePath	path to tipsy file to be appended
+
+		@returns	None
 		"""
 
 		tfile = open(tipsyFilePath,'rb')
@@ -206,8 +234,11 @@ class Stars(object):
 		"""
 		Saves the Stars object in tipsy format.
 
-		Arguments:
-		tipsyFilePath --- path to output file
+		Prints saved file path to stdout
+
+		@param[in]	tipsyFilePath	path to output file
+
+		@returns	None
 		"""
 		print "Writing..."
 		tfile = open(tipsyFilePath,'wb')
@@ -229,18 +260,13 @@ class Stars(object):
 		"""
 		Generates a figure "[figure_name].png" for this Star object
 
-		Keyword arguments:
-		figure_name -- path where figure is to be saved
-		lim -- limits the range of all axis in view (default: .8)
-		figsize -- size of final image (.png)
-		pointsize -- size of stars
-		nRed -- colors the first nRed particles (based on phi_ID) red and the remaining blue (default: None)
+		@param[in]	figure_name		path where figure is to be saved
+		@param[in]	lim				limits the range of all axis in view (default: .8)
+		@param[in]	figsize			size of final image (.png)
+		@param[in]	pointsize		size of stars
+		@param[in]	nRed			figure colors the first nRed particles red and the remaining blue (default: None)
 
-		Prints:
-		path to file just saved
-		
-		Returns:
-		void
+		@returns	path to file just saved (string)
 		"""
 
 		fig = plt.figure(figsize=(figsize,figsize))
@@ -264,20 +290,22 @@ class Stars(object):
 		plt.tight_layout()
 		fig_path_string = figure_name + '.png'
 		plt.savefig(fig_path_string)
-		print "Saved: "+fig_path_string
+		return fig_path_string
 
 def make_mp4(png_prefix, mp4_prefix, frame_rate = 20, bit_rate = '8000k', codec = 'libx264'):
 	"""
-	Generates "[mp4_prefix].mp4" video from a set of "[png_prefix]{number}.png" where {number} is a placeholder for consecutive integers
+	Makes an MP4 video from a set of PNG files.
 
-	Arguments:
-	png_prefix -- prefix of png files
-	mp4_prefix -- name of .mp4 file
+	Generates "[mp4_prefix].mp4" video from a set of "[png_prefix]{number}.png" where {number} is a
+	placeholder for consecutive integers.
 
-	Keyword arguments:
-	frame_rate -- in frames per second (default: 20)
-	bit_rate -- (string) in bits per second, higer rate = higer quality (default: '10000k')
-	codec -- used to encode video, may require extra libraries on system (defaut: 'libx264')
+	@param[in]	png_prefix		prefix of png files
+	@param[in]	mp4_prefix		name of .mp4 file
+	@param[in]	frame_rate		in frames per second (default: 20)
+	@param[in]	bit_rate		(string) in bits per second, higer rate = higer quality (default: '10000k')
+	@param[in]	codec			used to encode video, may require extra libraries on system (defaut: 'libx264')
+
+	@returns	None
 	"""
 	call(['ffmpeg',
 		'-r', str(frame_rate),
@@ -290,20 +318,22 @@ def make_mp4(png_prefix, mp4_prefix, frame_rate = 20, bit_rate = '8000k', codec 
 
 def read_tipsy(tipsy_prefix, figures_prefix = None, lim = .8, pointsize = .1, nRed = None, nThreads = 4):
 	'''
-	Reads a set of "[tipsy_prefix]{number}" files, where {number} is a placeholder for consecutive dicimal numbers, and
-	returns an array of Star() objects.
+	Reads a set of tipsy files and returns an array of Star objects or plots figures
 
-	Optionally, if figures_prefix is not None, will generate a set of figures "[figures_prefix]{index}.png",
-	where {index} is found from sorting {number}, and returns nothing (saves RAM for large set of tipsy files)
+	Reads a set of "[tipsy_prefix]{number}" files, where {number} is a placeholder for consecutive
+	dicimal numbers, and returns an array of Star() objects.
 
-	Arguments:
-	tipsy_prefix -- prefix of tipsy files
+	Optionally, if figures_prefix is not None, will generate a set of figures
+	"[figures_prefix]{index}.png", where {index} is found from sorting {number},
+	and returns nothing (saves RAM for large set of tipsy files).
 
-	Keyword arguments:
-	figures_prefix -- generates figures only, no array returned (default: None)
-	lim -- limits the range of all axis in view (default: .8)
-	pointsize -- size of points in figure
-	nRed -- when plotting figures colors the first nRed particles red and the remaining blue (default: None) -- broken
+	@param[in]	tipsy_prefix	prefix of tipsy files
+	@param[in]	figures_prefix	generates figures only, no array returned (default: None)
+	@param[in]	lim				limits the range of all axis in view (default: .8)
+	@param[in]	pointsize		size of points in figure
+	@param[in]	nRed			figure colors the first nRed particles red and the remaining blue (default: None)
+
+	@returns	an array of Star objects (only if figures_prefix is None)
 	'''
 
 	#comparitor for file name sorting
@@ -370,7 +400,18 @@ def read_tipsy(tipsy_prefix, figures_prefix = None, lim = .8, pointsize = .1, nR
 	# if figures_prefix is None:
 
 def txt2tipsy(nbody_file,tipsy_file):
+	"""
+	Converts a typical nbody or Aarseth text file to .tipsy format
 
+	Header may be in one of two formats:
+	@li [particle_count] [time_stamp] 
+	@li [particle_count] [eta] [dt] [tmax] [eps2] 
+
+	@param[in]	nbody_file	path to the nbody text formated file
+	@param[in]	tipsy_file	path to the tipsy output file
+
+	@returns 	None
+	"""
 	# Header: # particles, eta=0.02, dt, tmax, epsilon**2=0.25
 	# eta is "accuracy parameter"
 	# epsilon is "softening radius" (for close objects)
