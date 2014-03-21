@@ -76,17 +76,21 @@ class Stars(object):
 		else:
 			raise Exception("%iD not supported"%dim)
 
-	def scale(self,factor):
+	def scale(self,factor, invarient = True):
 		"""
 		Scale all lengths in Stars by factor.
 
 		Arguments:
 		factor -- multiplies the position and velocity vecors
+		invarient -- scales mass as well (default: True)
 		"""
 		for i in range(self.nStars):
 			self.pos[i] *= factor
 			self.vel[i] *= factor
 
+		if invarient:
+			for i in range(self.nStars):
+				self.mass[i] *= factor
 
 	def boost(self, velocity):
 		"""
