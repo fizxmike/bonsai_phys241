@@ -3,8 +3,11 @@ bonsai_phys241
 
 Python Scripts for running tree code for phys 241 project
 
+[download documentation](https://github.com/fizxmike/bonsai_phys241/blob/master/doc/latex/refman.pdf?raw=true)
+
 ##Requirements
 Python, Numpy, ffmpeg, libx264
+mpich or openmpi is optional
 
 ##Setup
 Clone this repo and the [treecode/Bonsai repo](https://github.com/fizxmike/Bonsai) into the same parent folder on your system
