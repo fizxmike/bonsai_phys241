@@ -107,6 +107,32 @@ class Stars(object):
 	# 		for i in range(self.nStars):
 	# 			self.mass[i] *= factor
 
+	def add_star(self, mass, pos, vel):
+		"""
+		Add a star to the collection
+
+		Appends a star to the Stars object
+
+		@param[in]	mass	the particle mass
+		@param[in]	pos		(3-tuple) the position of the particle
+		@param[in]	vel		(3-tuple) the velocity of the particle
+
+		@returns	None
+		"""
+
+		#make room
+		self.mass.resize((self.nStars+1,))
+		self.pos.resize((self.nStars+1,3))
+		self.vel.resize((self.nStars+1,3))
+
+		#save values
+		self.mass[self.nStars] = mass
+		self.pos[self.nStars,:] = pos
+		self.vel[self.nStars,:] = vel
+
+		#increment star count
+		self.nStars +=1
+
 	def boost(self, velocity):
 		"""
 		Add a net velocity (3-vector) to all stars
@@ -278,15 +304,15 @@ class Stars(object):
 			ax.plot(self.pos[redIdx,0],self.pos[redIdx,1],self.pos[redIdx,2],'r.',markersize=pointsize)
 			ax.plot(self.pos[blueIdx,0],self.pos[blueIdx,1],self.pos[blueIdx,2],'b.',markersize=pointsize)
 		else:	
-			ax.plot(self.pos[:,0],self.pos[:,1],self.pos[:,2],'w.',markersize=pointsize)
+			ax.plot(self.pos[:,0],self.pos[:,1],self.pos[:,2],'k.',markersize=pointsize)
 
 
 		ax.set_xlim(-lim,lim)
 		ax.set_ylim(-lim,lim)
 		ax.set_zlim(-lim,lim)
 		ax.set_axis_off()
-		ax.set_axis_bgcolor('black')
-		plt.title('time: %f'%self.time,color='white')
+		#ax.set_axis_bgcolor('black')
+		plt.title('time: %f'%self.time)#,color='white')
 		plt.tight_layout()
 		fig_path_string = figure_name + '.png'
 		plt.savefig(fig_path_string)
@@ -307,7 +333,7 @@ def make_mp4(png_prefix, mp4_prefix, frame_rate = 20, bit_rate = '8000k', codec 
 
 	@returns	None
 	"""
-	call(['ffmpeg',
+	call(['ffmpeg','-y',
 		'-r', str(frame_rate),
 		'-i', png_prefix + '%d.png',
 		'-vcodec',codec,
