@@ -1,5 +1,5 @@
 ## @namespace bonsai 
-#  The bonsai module provides a set of wrapping functions to the Bonsai tree code (https://github.com/fizxmike/Bonsai)
+#  The bonsai module provides a set of wrapping functions to the Bonsai tree code (https://github.com/treecode/Bonsai)
 
 """
 Bonsai.py module

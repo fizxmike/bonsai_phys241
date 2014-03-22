@@ -32,6 +32,10 @@ class Stars(object):
 	The Stars object holds mass, position, velocity, and particle IDs extracted	from a .tipsy file.
 
 	Currently on stars are processed (gas and dark matter ignored). Also, the phi parameter is used as a particle ID (like Bonsai).
+
+	@todo: The "IDs" argument int Stars.save_figure() is handy, but since Bonsai re-sorts particles at runtime, the IDs become out of order.
+	This causes the save_figure() funtion to have to sort them before selecting the proper particles. It would be nice if we added a
+	member function that returned the indexes within the tipsy file that match given IDs.
 	"""
 
 	## Simulation timestamp (carried over from .tipsy file)
@@ -282,7 +286,7 @@ class Stars(object):
 
 		print "Saved: "+tipsyFilePath
 
-	def save_figure(self, figure_name, lim = .8, figsize = 10, pointsize = .1, nRed = None):
+	def save_figure(self, figure_name, lim = .8, figsize = 10, pointsize = .1, nRed = None, elevAng=45, rotAng=0, IDs=None):
 		"""
 		Generates a figure "[figure_name].png" for this Star object
 
@@ -291,19 +295,27 @@ class Stars(object):
 		@param[in]	figsize			size of final image (.png)
 		@param[in]	pointsize		size of stars
 		@param[in]	nRed			figure colors the first nRed particles red and the remaining blue (default: None)
+		@param[in]	elevAng			camera view elevation in degrees from x-y plane.
+		@param[in]	rotAng			camera view rotation in degrees about z-axis.
+		@param[in]	IDs				(int array) list of particle IDs to plot (assumes ascening order)
 
 		@returns	path to file just saved (string)
 		"""
 
 		fig = plt.figure(figsize=(figsize,figsize))
 		ax = fig.gca(projection='3d')
+		ax.view_init(elev=elevAng, azim=rotAng)
 		if nRed is not None:
-
 			redIdx = np.where(self.IDs < nRed)[0]
 			blueIdx = np.where(self.IDs >= nRed)[0]
 			ax.plot(self.pos[redIdx,0],self.pos[redIdx,1],self.pos[redIdx,2],'r.',markersize=pointsize)
 			ax.plot(self.pos[blueIdx,0],self.pos[blueIdx,1],self.pos[blueIdx,2],'b.',markersize=pointsize)
-		else:	
+		elif IDs is not None:	
+			#plot only IDs if passed
+			sorted_ids = np.argsort(self.IDs)
+			selected_ids_idx = sorted_ids[IDs]
+			ax.plot(self.pos[selected_ids_idx,0],self.pos[selected_ids_idx,1],self.pos[selected_ids_idx,2],'k.',markersize=pointsize)
+		else:
 			ax.plot(self.pos[:,0],self.pos[:,1],self.pos[:,2],'k.',markersize=pointsize)
 
 
@@ -342,7 +354,7 @@ def make_mp4(png_prefix, mp4_prefix, frame_rate = 20, bit_rate = '8000k', codec 
 	print "Saved: " + mp4_prefix + ".mp4"
 
 
-def read_tipsy(tipsy_prefix, figures_prefix = None, lim = .8, pointsize = .1, nRed = None, nThreads = 4):
+def read_tipsy(tipsy_prefix, figures_prefix = None, lim = .8, pointsize = .1, nRed = None, elevAng = 45, IDs = None):
 	'''
 	Reads a set of tipsy files and returns an array of Star objects or plots figures
 
@@ -355,9 +367,11 @@ def read_tipsy(tipsy_prefix, figures_prefix = None, lim = .8, pointsize = .1, nR
 
 	@param[in]	tipsy_prefix	prefix of tipsy files
 	@param[in]	figures_prefix	generates figures only, no array returned (default: None)
-	@param[in]	lim				limits the range of all axis in view (default: .8)
-	@param[in]	pointsize		size of points in figure
-	@param[in]	nRed			figure colors the first nRed particles red and the remaining blue (default: None)
+	@param[in]	lim				(figure only) limits the range of all axis in view (default: .8)
+	@param[in]	pointsize		(figure only) size of points in figure
+	@param[in]	nRed			(figure only) colors the first nRed particles red and the remaining blue (default: None)
+	@param[in]	elevAng			(figure only) camera view elevation in degrees from x-y plane (default: 45).
+	@param[in]	IDs				(figure only) (int array) list of particle IDs to plot (assumes ascening order, default:None)
 
 	@returns	an array of Star objects (only if figures_prefix is None)
 	'''
@@ -389,7 +403,7 @@ def read_tipsy(tipsy_prefix, figures_prefix = None, lim = .8, pointsize = .1, nR
 		for tipsy_file in tipsy_list:
 			#read_and_plot(tipsy_file,index,lim,nRed)
 			temp_stars = Stars(tipsy_file)
-			temp_stars.save_figure(figures_prefix+str(index),lim=lim,pointsize=pointsize, nRed=nRed)
+			temp_stars.save_figure(figures_prefix+str(index),lim=lim,pointsize=pointsize, nRed=nRed, elevAng = elevAng, IDs = IDs)
 #			procs.append(Process(target=read_and_plot,args=(tipsy_file,index,lim,nRed)))
 #			procs[-1].start()
 			index +=1
@@ -408,22 +422,6 @@ def read_tipsy(tipsy_prefix, figures_prefix = None, lim = .8, pointsize = .1, nR
 		for tipsy_file in tipsy_list:
 			stars_array[-1] = Stars(tipsy_file)
 		return stars_array
-
-
-
-	# index = 0 #used to count and name figures
-
-	# for tipsy_file in tipsy_list:
-	# 	#TODO: make sure path is file
-
-	# 	if figures_prefix is not None:
-	# 		temp_stars = Stars(tipsy_file)
-	# 		temp_stars.save_figure(figures_prefix+str(index),lim=lim,nRed=nRed)
-	# 		index += 1
-	# 	else:
-	# 		stars_array[-1] = Stars(tipsy_file)
-
-	# if figures_prefix is None:
 
 def txt2tipsy(nbody_file,tipsy_file):
 	"""

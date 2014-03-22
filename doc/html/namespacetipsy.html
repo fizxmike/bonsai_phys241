@@ -47,6 +47,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li class="current"><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
@@ -200,7 +201,13 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>nThreads</em> = <code>4</code>&#160;</td>
+          <td class="paramname"><em>elevAng</em> = <code>45</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>IDs</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -218,9 +225,11 @@ Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">tipsy_prefix</td><td>prefix of tipsy files </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">figures_prefix</td><td>generates figures only, no array returned (default: None) </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">lim</td><td>limits the range of all axis in view (default: .8) </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">pointsize</td><td>size of points in figure </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">nRed</td><td>figure colors the first nRed particles red and the remaining blue (default: None)</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">lim</td><td>(figure only) limits the range of all axis in view (default: .8) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">pointsize</td><td>(figure only) size of points in figure </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">nRed</td><td>(figure only) colors the first nRed particles red and the remaining blue (default: None) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">elevAng</td><td>(figure only) camera view elevation in degrees from x-y plane (default: 45). </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">IDs</td><td>(figure only) (int array) list of particle IDs to plot (assumes ascening order, default:None)</td></tr>
   </table>
   </dd>
 </dl>
@@ -288,7 +297,7 @@ Functions</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 21 2014 00:12:45 for bonsai_phys241 by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat Mar 22 2014 18:58:30 for bonsai_phys241 by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

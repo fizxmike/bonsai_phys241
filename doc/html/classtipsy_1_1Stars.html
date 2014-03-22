@@ -47,6 +47,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
@@ -114,6 +115,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtipsy_1_1Stars.html#a9716f31e1078c74317f194bee8fc9ef6">__init__</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs <a class="el" href="classtipsy_1_1Stars.html" title="The Stars object holds mass, position, velocity, and particle IDs extracted from a ...">Stars</a> object from a .tipsy file.  <a href="#a9716f31e1078c74317f194bee8fc9ef6"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtipsy_1_1Stars.html#a2cf27e3020ab17464c15dfe46ee7199f">add_star</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a star to the collection.  <a href="#a2cf27e3020ab17464c15dfe46ee7199f"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtipsy_1_1Stars.html#a6358c08b0f66dbfea05b71f6d80f4ef3">boost</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a net velocity (3-vector) to all stars.  <a href="#a6358c08b0f66dbfea05b71f6d80f4ef3"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtipsy_1_1Stars.html#ac891bc29ace97f9d325726b09817b5b5">translate</a></td></tr>
@@ -145,7 +148,8 @@ Static Public Attributes</h2></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><p>The <a class="el" href="classtipsy_1_1Stars.html" title="The Stars object holds mass, position, velocity, and particle IDs extracted from a ...">Stars</a> object holds mass, position, velocity, and particle IDs extracted from a .tipsy file. </p>
-<p>Currently on stars are processed (gas and dark matter ignored). Also, the phi parameter is used as a particle ID (like Bonsai). </p>
+<p>Currently on stars are processed (gas and dark matter ignored). Also, the phi parameter is used as a particle ID (like Bonsai).</p>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000001">Todo:</a></b></dt><dd>: The "IDs" argument int <a class="el" href="classtipsy_1_1Stars.html#adb709a6eea818327ee96cd5550e6b505" title="Generates a figure &quot;[figure_name].png&quot; for this Star object.">Stars.save_figure()</a> is handy, but since Bonsai re-sorts particles at runtime, the IDs become out of order. This causes the <a class="el" href="classtipsy_1_1Stars.html#adb709a6eea818327ee96cd5550e6b505" title="Generates a figure &quot;[figure_name].png&quot; for this Star object.">save_figure()</a> funtion to have to sort them before selecting the proper particles. It would be nice if we added a member function that returned the indexes within the tipsy file that match given IDs. </dd></dl>
 </div><hr/><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a9716f31e1078c74317f194bee8fc9ef6"></a><!-- doxytag: member="tipsy::Stars::__init__" ref="a9716f31e1078c74317f194bee8fc9ef6" args="" -->
 <div class="memitem">
@@ -185,6 +189,57 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <hr/><h2>Member Function Documentation</h2>
+<a class="anchor" id="a2cf27e3020ab17464c15dfe46ee7199f"></a><!-- doxytag: member="tipsy::Stars::add_star" ref="a2cf27e3020ab17464c15dfe46ee7199f" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classtipsy_1_1Stars.html#a2cf27e3020ab17464c15dfe46ee7199f">tipsy.Stars.add_star</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>mass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>pos</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>vel</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Add a star to the collection. </p>
+<p>Appends a star to the <a class="el" href="classtipsy_1_1Stars.html" title="The Stars object holds mass, position, velocity, and particle IDs extracted from a ...">Stars</a> object</p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">mass</td><td>the particle mass </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">pos</td><td>(3-tuple) the position of the particle </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">vel</td><td>(3-tuple) the velocity of the particle</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>None </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="a90496e9348fcf654cacae4869d6a23ca"></a><!-- doxytag: member="tipsy::Stars::append" ref="a90496e9348fcf654cacae4869d6a23ca" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -399,7 +454,25 @@ Static Public Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>nRed</em> = <code>None</code>&#160;</td>
+          <td class="paramname"><em>nRed</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>elevAng</em> = <code>45</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>rotAng</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>IDs</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -417,7 +490,10 @@ Static Public Attributes</h2></td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">lim</td><td>limits the range of all axis in view (default: .8) </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">figsize</td><td>size of final image (.png) </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">pointsize</td><td>size of stars </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">nRed</td><td>figure colors the first nRed particles red and the remaining blue (default: None)</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">nRed</td><td>figure colors the first nRed particles red and the remaining blue (default: None) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">elevAng</td><td>camera view elevation in degrees from x-y plane. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rotAng</td><td>camera view rotation in degrees about z-axis. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">IDs</td><td>(int array) list of particle IDs to plot (assumes ascening order)</td></tr>
   </table>
   </dd>
 </dl>
@@ -611,7 +687,7 @@ Static Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 21 2014 00:12:45 for bonsai_phys241 by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat Mar 22 2014 18:58:30 for bonsai_phys241 by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>
