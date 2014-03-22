@@ -24,10 +24,12 @@ In Bonsai/runtime do:
 * View Cartwheel Midterm 2014 Results: [Cartwheel.ipynb](http://nbviewer.ipython.org/github/fizxmike/bonsai_phsy241/blob/master/Cartwheel.ipynb)
 * View Cartwheel Final 2014 Results: [CartwheelFinal.ipynb](http://nbviewer.ipython.org/github/fizxmike/bonsai_phsy241/blob/master/CartwheelFinal.ipynb)
 
-##Milky Way Cartwheel:
+##Twin Milky Way:
 * Milky Way Galaxy C (from galactics) Warm-up: [MWGalaxy.ipynb](http://nbviewer.ipython.org/github/fizxmike/bonsai_phsy241/blob/master/MWGalaxy.ipynb)
-* Twin Milky Way Collision: [Collision.ipynb](http://nbviewer.ipython.org/github/fizxmike/bonsai_phsy241/blob/master/Collision.ipynb)
+* Twin Milky Way Collision: [MWCollision.ipynb](http://nbviewer.ipython.org/github/fizxmike/bonsai_phsy241/blob/master/MWCollision.ipynb)
 
+##My Cartwheel:
+* Cannon Ball Collision: [Collision.ipynb](http://nbviewer.ipython.org/github/fizxmike/bonsai_phsy241/blob/master/Collision.ipynb)
 
 ##My Other Code
 * Inner solar system webApp (leapfrog): [leapint.js](https://googledrive.com/host/0By3y5bc79qIyU2c0WE4tQVFTZHM/leapFrog/leapint.htm)
