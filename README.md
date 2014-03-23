@@ -1,21 +1,31 @@
 bonsai_phys241
 ==============
 
-Python Scripts for wrapping Bonsai tree code and generating video for phys 241 project
+Python Scripts for wrapping the Bonsai tree code and generating plots and video for phys 241 project
 
-[download documentation](https://github.com/fizxmike/bonsai_phys241/blob/master/doc/latex/refman.pdf?raw=true)
+[download PDF documentation](https://github.com/fizxmike/bonsai_phys241/blob/master/doc/latex/refman.pdf?raw=true)
 
-##Requirements
-Python, Numpy, ffmpeg, libx264
-mpich or openmpi is optional
+##Requirements (Preferably Linux)
+CUDA, git, gcc/g++, make, cmake,  Python, Numpy, ffmpeg, libx264, mpi (optional)
 
 ##Setup
 Clone this repo and the [treecode/Bonsai repo](https://github.com/fizxmike/Bonsai) into the same parent folder on your system
 
-##Compiling Bonsai
-In Bonsai/runtime do:
+###Install Packages (Ubuntu 12.04 LTS)
 
-    cmake -DUSE_B40C=1 -DUSE_DUST=0 -DCMAKE_CXX_COMPILER=mpicxx; make
+    sudo apt-get install git python-numpy ffmpeg libavcodec-extra-* mpich2 build-essential cmake
+
+###Repo Checkout
+
+    git clone https://github.com/fizxmike/bonsai_phys241.git
+    git clone https://github.com/treecode/Bonsai.git
+
+##Compiling Bonsai
+    
+    cd Bonsai/runtime 
+    cmake -DUSE_B40C=1 -DUSE_DUST=0 -DCMAKE_CXX_COMPILER=mpicxx
+    make
+
 
 ##Easy Examples
 * Quick Start Example: [Plummer.ipynb](http://nbviewer.ipython.org/github/fizxmike/bonsai_phsy241/blob/master/Plummer.ipynb)
