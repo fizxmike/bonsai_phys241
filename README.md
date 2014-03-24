@@ -8,7 +8,7 @@ For a detailed outline of this code package, please refer to the [Code Documenta
 It is recommended that you fork this repo if you would like to contribute. Then submit a pull request.
 
 ##Requirements
-**Software:** CUDA, git, gcc/g++, make, cmake,  Python, Numpy, ffmpeg, libx264, mpi (optional), ipython notebook (optional)
+**Software:** CUDA, git, gcc/g++, make, cmake, Python, Numpy, Matplotlib, ffmpeg, libx264, mpi (optional), ipython notebook (optional)
 
 I used IPyhon Notebook to manage my projects. The notebook offers real-time interaction with a python kernel through small input/output block pairs (think MATLAB meets Mathematica). It also allowed me to easily share my results through a webpage (). More info can be found on the [IPython Notebook](http://ipython.org/notebook) and [Notebook Viewer](http://nbviewer.ipython.org/) web sites.
 
@@ -23,7 +23,7 @@ Select your platform and follow the instructions in the "Getting Started Guide" 
 ###Install *Required* Packages
 Ubuntu 12.04 LTS:
 
-    sudo apt-get install git python-numpy ffmpeg libavcodec-extra-* build-essential cmake
+    sudo apt-get install git python-numpy python-matplotlib ffmpeg libavcodec-extra-* build-essential cmake
 
 ###Install *Optional* Packages
 Ubuntu 12.04 LTS:
