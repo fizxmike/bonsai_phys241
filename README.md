@@ -5,7 +5,7 @@ Python Scripts for wrapping the [Bonsai Tree Code](https://github.com/fizxmike/B
 
 For a detailed outline of this code package, please refer to the [Code Documentation](https://github.com/fizxmike/bonsai_phys241/blob/master/doc/latex/refman.pdf?raw=true)
 
-If you need help, please contact mfolkerts *at* physics *dot* ucsd *dot* edu.
+If you need help, please contact **mfolkerts** *at* **physics** *dot* **ucsd** *dot* **edu**, or [create an issue](https://github.com/fizxmike/bonsai_phys241/issues/new).
 
 It is recommended that you [fork](https://help.github.com/articles/fork-a-repo) this repo if you would like to contribute. Then submit a [pull request](https://help.github.com/articles/using-pull-requests) for your changes.
 
