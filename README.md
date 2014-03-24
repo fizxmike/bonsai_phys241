@@ -1,11 +1,13 @@
 bonsai_phys241
 ==============
 
-Python Scripts for wrapping the [Bonsai Tree Code](https://github.com/fizxmike/Bonsai) and generating figures and video for phys 241 projects
+Python Scripts for wrapping the [Bonsai Tree Code](https://github.com/fizxmike/Bonsai) and generating figures and video for phys 241 projects. The tipsy.py module has functions to manage the .tipsy file format used by Bonsai (and other n-body code) and can convert text-based n-body files to .tipsy format.
 
 For a detailed outline of this code package, please refer to the [Code Documentation](https://github.com/fizxmike/bonsai_phys241/blob/master/doc/latex/refman.pdf?raw=true)
 
-It is recommended that you fork this repo if you would like to contribute. Then submit a pull request.
+If you need help, please contact mfolkerts *at* physics *dot* ucsd *dot* edu.
+
+It is recommended that you [fork](https://help.github.com/articles/fork-a-repo) this repo if you would like to contribute. Then submit a [pull request](https://help.github.com/articles/using-pull-requests) for your changes.
 
 ##Requirements
 **Software:** CUDA, git, gcc/g++, make, cmake, Python, Numpy, Matplotlib, ffmpeg, libx264, mpi (optional), ipython notebook (optional)
@@ -74,11 +76,12 @@ Then when you launch IPython Notebook, tell it not to launch a browser window (w
 Back on your local machine, navigate to http://127.0.0.1:8888/
 
 ##Easy Examples
-This notebook will get you started running the tree code. You can copy and paste these commands into the python terminal or your own python script. I reccommend 
+This notebook will get you started running the tree code. You can copy and paste these commands into the python terminal or your own python script.
 
 * Quick Start Example: [Plummer.ipynb](http://nbviewer.ipython.org/github/fizxmike/bonsai_phsy241/blob/master/Plummer.ipynb)
 
 ##Other Galaxies
+I do not provide the initial data, sorry.
 * View Cartwheel Midterm 2014 Results: [Cartwheel.ipynb](http://nbviewer.ipython.org/github/fizxmike/bonsai_phsy241/blob/master/Cartwheel.ipynb)
 * View Cartwheel Final 2014 Results: [CartwheelFinal.ipynb](http://nbviewer.ipython.org/github/fizxmike/bonsai_phsy241/blob/master/CartwheelFinal.ipynb)
 
@@ -90,5 +93,5 @@ This notebook will get you started running the tree code. You can copy and paste
 * Ball and Disk Warmup: [CollisionWarmup.ipynb](http://nbviewer.ipython.org/github/fizxmike/bonsai_phsy241/blob/master/CollisionWarmup.ipynb)
 * Cannon Ball Collision: [Collision.ipynb](http://nbviewer.ipython.org/github/fizxmike/bonsai_phsy241/blob/master/Collision.ipynb)
 
-##My Other Code
+##My N-Body Code
 * Inner solar system webApp (leapfrog): [leapint.js](https://googledrive.com/host/0By3y5bc79qIyU2c0WE4tQVFTZHM/leapFrog/leapint.htm)
